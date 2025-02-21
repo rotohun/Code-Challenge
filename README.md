@@ -19,9 +19,10 @@ You work will be scored based on several categories:
 
 - [ ] Does it meet the requirements?
 - [ ] Code Organization and quality
+- [ ] Bugs Present
 - [ ] UI/UX
 - [ ] Code Process
 - [ ] LLM Integration and prompting methods
 - [ ] Time to completion
 
-When work is completed open an MR to this repository for review and tag @Full-lifey
+When work is completed contact @Full-lifey with a link to the forked repo
