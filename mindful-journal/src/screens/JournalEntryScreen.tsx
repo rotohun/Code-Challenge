@@ -27,7 +27,7 @@ const JournalEntryScreen: React.FC<RootStackScreenProps<'JournalEntry'>> = ({
       </View>
     );
   }
-
+  const { sentiment, title, content, createdAt } = entry;
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
@@ -37,18 +37,16 @@ const JournalEntryScreen: React.FC<RootStackScreenProps<'JournalEntry'>> = ({
           onPress={() => navigation.goBack()}
         />
         <Text variant="titleLarge" style={styles.date}>
-          {format(new Date(entry.createdAt), 'MMMM d, yyyy')}
+          {title}
         </Text>
       </View>
-      
       <ScrollView style={styles.content}>
-        <Text variant="headlineMedium" style={styles.title}>
-          {entry.title}
-        </Text>
-        
         <View style={styles.metadata}>
           <Text variant="bodyMedium" style={styles.time}>
-            {format(new Date(entry.createdAt), 'h:mm a')}
+            Created: {format(new Date(createdAt), 'h:mm a')}
+          </Text>
+          <Text variant="bodyMedium" style={styles.time}>
+            Mood: {sentiment}
           </Text>
         </View>
 
@@ -76,7 +74,7 @@ const styles = StyleSheet.create({
   date: {
     flex: 1,
     textAlign: 'center',
-    marginRight: 48, // To center the text accounting for the back button
+    marginRight: 48,
   },
   content: {
     flex: 1,
@@ -87,14 +85,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   metadata: {
-    flexDirection: 'row',
     marginBottom: 24,
   },
   time: {
     color: '#757575',
+    marginBottom: 8,
   },
   contentText: {
     lineHeight: 24,
+  },
+  moodContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
 });
 

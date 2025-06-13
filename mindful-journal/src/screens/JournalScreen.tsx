@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { TextInput, Button, IconButton, Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RootStackScreenProps } from '../types/navigation';
 import { useJournal } from '../contexts/JournalContext';
 import { LoadingScreen } from '../components/LoadingScreen';
+import { debounce } from 'lodash';
 
 const JournalScreen: React.FC<RootStackScreenProps<'Journal'>> = ({
   navigation,
@@ -23,25 +24,32 @@ const JournalScreen: React.FC<RootStackScreenProps<'Journal'>> = ({
   React.useEffect(() => {
     if (existingEntry) {
       setContent(existingEntry.content);
+      setTitle(existingEntry.title);
     }
   }, [existingEntry]);
 
-  const handleSave = async () => {
-    if (!content.trim() && !title.trim()) return;
-    if (content.length < 30) {
+  const validateEntry = () => {
+    if (!content.trim() && !title.trim()) return false;
+    if (content.length < 10) {
       Alert.alert('Please enter at least 10 characters for your journal entry');
-      return;
+      return false;
     }
     if (title.length < 5) {
       Alert.alert('Please enter at least 5 characters for your journal title');
-      return;
+      return false;
     }
+    return true;
+  };
+
+  const saveEntry = async () => {
+    if (!validateEntry()) return;
+    
     try {
       const entry = {
         id: entryId || Date.now().toString(),
         content: content.trim(),
         createdAt: new Date().toISOString(),
-        title: title,
+        title: title.trim(),
       };
 
       if (entryId) {
@@ -57,7 +65,19 @@ const JournalScreen: React.FC<RootStackScreenProps<'Journal'>> = ({
     }
   };
 
+  // Create a debounced save function
+  const debouncedSave = useCallback(
+    debounce(saveEntry, 1000, { leading: true, trailing: false }),
+    [content, title, entryId]
+  );
+
+  const handleSave = () => {
+    if (isSaving) return;
+    debouncedSave();
+  };
+
   const handleCancel = () => {
+    debouncedSave.cancel();
     setContent('');
     setTitle('');
     navigation.goBack();
@@ -67,6 +87,7 @@ const JournalScreen: React.FC<RootStackScreenProps<'Journal'>> = ({
     return <LoadingScreen message="Saving your journal entry..." />;
   }
 
+  const isDisabled = content.length < 10 || title.length < 5;
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
@@ -75,7 +96,12 @@ const JournalScreen: React.FC<RootStackScreenProps<'Journal'>> = ({
           size={24}
           onPress={handleCancel}
         />
-        <Button mode="contained" onPress={handleSave} disabled={isSaving}>
+        <Button 
+          mode="contained" 
+          onPress={handleSave} 
+          disabled={isDisabled || isSaving} 
+          style={isDisabled ? styles.saveButtonDisabled : styles.saveButton}
+        >
           Save
         </Button>
       </View>
@@ -147,6 +173,14 @@ const styles = StyleSheet.create({
     color: '#FF0000',
   },
   contentCounterText: {
+    color: '#000',
+  },
+  saveButton: {
+    backgroundColor: '#21005d',
+    color: '#fff',
+  },
+  saveButtonDisabled: {
+    backgroundColor: '#E0E0E0',
     color: '#000',
   },
 });

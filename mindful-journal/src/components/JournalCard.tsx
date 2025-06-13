@@ -45,7 +45,7 @@ export const JournalCard: React.FC<Props> = ({
         <Text
             style={styles.sentiment}
           >
-            {sentiment}
+            Mood: {sentiment}
           </Text>
         </View>
       </View>
@@ -56,10 +56,8 @@ export const JournalCard: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
-    justifyContent: 'space-between',
+    padding: 20,
     backgroundColor: '#FFF8E7',
-    flexDirection: 'row',
   },
   textContainer: {
     flex: 1,
@@ -71,11 +69,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   sentimentContainer: {
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
   sentiment: {
-    fontSize: 24,
+    fontSize: 16,
   },
   deleteContainer: {
     backgroundColor: '#F6CFCF',
